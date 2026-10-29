@@ -116,6 +116,7 @@
     @keyframes ry { 0% { scale: 0; rotate: 0deg; opacity: 1; } 100% { scale: 1; rotate: 60deg; opacity: 0; } }
     @keyframes fl { 30% { opacity: .7; } to { opacity: 0; } }
     @keyframes spk { from { transform: translate(0,0) scale(.4); opacity: 1; } to { transform: translate(var(--dx),var(--dy)) scale(1.2) rotate(180deg); opacity: 0; } }
+    .music-btn { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 10px); left: 12px; background: var(--paper); border: 2px solid #0369a1; border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem; display: grid; place-items: center; cursor: pointer; z-index: 10; box-shadow: 2px 3px 0 rgba(0,0,0,.15); }
   </style>
 </head>
 <body>
@@ -127,7 +128,8 @@
   <div id="sy" class="say"></div>
   <div class="cr">Quà Sinh Nhật Con Trai - Lê Hải Phương (3/11/2026)</div>
   <div id="iris"></div>
-
+  <button class="music-btn" id="mBtn">🎵</button>
+  
   <script>
     const V = {
       "t": "Quà sinh nhật con trai",
@@ -464,6 +466,10 @@
     ev.addEventListener("animationend", op);
     $("#sk").onclick = () => { ev.style.animation = "none"; op(); $("#sk").remove(); };
     $("#hb").onclick = () => {
+      // Thêm dòng lệnh phát nhạc vào đây
+      const music = document.getElementById("bgMusic");
+      if (music) { music.volume = 0.4; music.play().catch(e => console.log(e)); }
+
       if ($("#sk")) $("#sk").remove();
       $("#iris").classList.add("on");
       setTimeout(() => {
@@ -471,6 +477,27 @@
         catOn = 1; sayIt(V.m.w); walkTo(0, () => arrive(0));
       }, 1000);
     };
+
+    const mBtn = document.getElementById("mBtn");
+    const bgMusic = document.getElementById("bgMusic");
+    let isPlaying = false;
+    if (mBtn && bgMusic) {
+      mBtn.onclick = () => {
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+          bgMusic.play();
+          mBtn.textContent = "🔊";
+        } else {
+          bgMusic.pause();
+          mBtn.textContent = "🔇";
+        }
+      };
+    }
+    
   </script>
+  <!-- Thẻ âm thanh nhạc nền Happy Birthday -->
+  <audio id="bgMusic" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-cute.mp3" type="audio/mp3">
+  </audio>
 </body>
 </html>
