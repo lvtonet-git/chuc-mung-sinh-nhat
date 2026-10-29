@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Quà Sinh Nhật Con Trai - Lê Hải Phương (3/11/2026)</title>
+  <style>
+    :root {
+      --ink: #0c4a6e;
+      --paper: #fff8f3;
+      --b1: #e0f2fe;
+      --b2: #bae6fd;
+      --ac: #38bdf8;
+      box-sizing: border-box;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; width: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { color: var(--ink); background: var(--b1); }
+    
+    #cv { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; }
+    #ui { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
+    #ui > * { pointer-events: auto; }
+
+    .paper {
+      background: var(--paper);
+      border-radius: 12px 24px 12px 24px;
+      padding: 22px 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      max-width: 360px;
+      width: 90%;
+      position: relative;
+      line-height: 1.6;
+      text-align: center;
+      animation: pop .5s ease-out;
+    }
+    .paper::before {
+      content: ""; position: absolute; top: -10px; left: 38%; width: 76px; height: 20px; background: var(--ac); opacity: .55; transform: rotate(-3deg);
+    }
+
+    .btn, .skip {
+      font: inherit; font-weight: 700; color: #0c4a6e; background: var(--ac); border: 2px solid #0369a1; border-radius: 30px; padding: 12px 24px; box-shadow: 2px 3px 0 #0369a1; cursor: pointer; display: block; margin: 12px auto 0;
+    }
+    .skip { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 10px); right: 12px; padding: 6px 14px; font-size: .85rem; background: var(--paper); color: var(--ink); margin: 0; z-index: 10; }
+    .go { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 35px); left: 50%; transform: translateX(-50%); z-index: 10; animation: pop .5s; }
+
+    .stg { position: fixed; inset: 0; display: grid; place-items: center; z-index: 5; }
+    .ev {
+      position: absolute; width: 210px; height: 140px; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: grid; place-items: center; font-size: 44px; animation: fall 2s cubic-bezier(.3,.7,.4,1) forwards; transition: .7s;
+    }
+    .fp { position: absolute; top: 0; left: 0; right: 0; height: 70px; background: var(--ac); clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top; transition: transform .6s; }
+    .ev.o .fp { transform: rotateX(180deg); }
+    .ev.gone { transform: translateY(120px) scale(.6); opacity: 0; }
+
+    .sh { position: absolute; width: min(88vw, 360px); opacity: 0; transform: translateY(60px) scale(.8); transition: .8s cubic-bezier(.2,1.3,.4,1); pointer-events: none; }
+    .sh.up { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+    .heart { font: inherit; font-weight: 800; background: none; border: 0; font-size: 52px; cursor: pointer; animation: hb 1.2s infinite; color: var(--ink); display: block; margin: 10px auto; }
+    .heart small { font-size: .9rem; display: block; margin-top: 4px; }
+
+    #iris { position: fixed; inset: 0; background: var(--b1); clip-path: circle(0% at 50% 60%); transition: clip-path .95s cubic-bezier(.7,0,.3,1); pointer-events: none; z-index: 9; }
+    #iris.on { clip-path: circle(150% at 50% 60%); }
+
+    #hud { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 10px); left: 0; right: 0; display: flex; justify-content: center; gap: 12px; pointer-events: none; opacity: 0; transition: opacity .8s; z-index: 8; }
+    #hud.on { opacity: 1; }
+    #hud b { font-size: 24px; background: var(--paper); border-radius: 50%; width: 46px; height: 46px; display: grid; place-items: center; filter: grayscale(1); opacity: .55; transition: .5s; box-shadow: 2px 3px 0 rgba(0,0,0,.15); }
+    #hud b.on { filter: none; opacity: 1; transform: scale(1.15); }
+
+    #bn { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 68px); left: 50%; transform: translate(-50%, -20px); opacity: 0; background: var(--paper); padding: 8px 18px; border-radius: 20px; font-weight: 700; box-shadow: 2px 3px 0 rgba(0,0,0,.18); transition: .6s; text-align: center; max-width: 90vw; pointer-events: none; z-index: 8; }
+    #bn.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .tap { position: fixed; transform: translate(-50%, -50%); background: none; border: 0; cursor: pointer; z-index: 7; }
+    .tap span { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--paper); color: var(--ink); border-radius: 20px; padding: 6px 14px; font-weight: 700; box-shadow: 2px 3px 0 rgba(0,0,0,.2); animation: pu 1.2s infinite; }
+
+    .stg2 { position: fixed; inset: 0; pointer-events: none; z-index: 6; }
+    .gb { position: fixed; }
+    .gb .bd { position: absolute; bottom: 0; left: 0; right: 0; height: 72%; background: var(--ac); border-radius: 6px; box-shadow: inset 0 -8px 0 rgba(0,0,0,.08); }
+    .gb .bd::after, .gb .ld::after { content: ""; position: absolute; left: 42%; width: 16%; top: 0; bottom: 0; background: #fff; opacity: .85; }
+    .gb .ld { position: absolute; top: 0; left: -5%; right: -5%; height: 28%; background: var(--ac); filter: brightness(1.08); border-radius: 6px; transition: .6s; transform-origin: left bottom; }
+
+    .shake { animation: shk .6s; }
+    .open .ld { transform: translate(14px, -90px) rotate(-32deg); opacity: 0; }
+    .rays { position: fixed; width: 150vmax; height: 150vmax; transform: translate(-50%, -50%); scale: 0; background: repeating-conic-gradient(rgba(255,255,255,.6) 0 8deg, transparent 8deg 24deg); mask: radial-gradient(circle, #000 0, transparent 55%); pointer-events: none; }
+    .burst .rays { animation: ry 1.7s ease-out forwards; }
+    .flash { position: fixed; inset: 0; background: #fff; opacity: 0; }
+    .burst .flash { animation: fl .6s; }
+
+    .sp { position: fixed; font-size: 20px; animation: spk 1.2s ease-out forwards; pointer-events: none; z-index: 10; }
+    .itm { position: fixed; width: 74px; height: 74px; margin: -37px 0 0 -37px; border-radius: 50%; border: 3px solid #0369a1; background: var(--paper); font-size: 2rem; display: grid; place-items: center; transform: scale(0); transition: left .7s cubic-bezier(.2,1.4,.4,1), top .7s cubic-bezier(.2,1.4,.4,1), transform .5s; pointer-events: auto; cursor: pointer; animation: fb 2.4s ease-in-out infinite alternate; }
+    .itm.fly { transform: scale(1); }
+    .itm.got { background: var(--ac); animation: none; opacity: .75; }
+
+    .cd { position: fixed; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(12, 74, 110, 0.35); overflow-y: auto; animation: fi .3s; z-index: 12; }
+    .cd.out { opacity: 0; transition: .3s; }
+
+    .e1 { font-size: 3rem; margin-bottom: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+    .it { font: inherit; font-size: 2rem; aspect-ratio: 1; border-radius: 16px; border: 2px dashed var(--ink); background: var(--paper); cursor: pointer; color: var(--ink); }
+    .it.op { background: var(--ac); color: #0c4a6e; border-style: solid; transform: rotate(-4deg); }
+
+    .monkey { width: 90px; display: block; margin: 0 auto; }
+    .gift { font-weight: 700; margin-top: 6px; }
+
+    .say { position: fixed; transform: translate(-50%, -100%); margin-top: -4px; background: var(--paper); padding: 8px 14px; border-radius: 16px; font-weight: 700; max-width: 220px; text-align: center; box-shadow: 2px 3px 0 rgba(0,0,0,.2); opacity: 0; transition: .4s; pointer-events: none; z-index: 8; font-size: .9rem; color: var(--ink); width: max-content; }
+    .say.on { opacity: 1; }
+    .say::after { content: ""; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); border: 8px solid transparent; border-top-color: #fff8f3; border-bottom: 0; }
+
+    .cr { position: fixed; right: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 8px); font-weight: 700; font-size: .8rem; color: #0369a1; background: rgba(255,250,243,.85); padding: 4px 10px; border-radius: 12px; box-shadow: 1px 2px 0 rgba(0,0,0,.12); z-index: 8; pointer-events: none; }
+
+    @keyframes fall { 0% { transform: translateY(-60vh) rotate(-25deg); } 70% { transform: translateY(0) rotate(12deg); } 85% { transform: translateY(-14px) rotate(-6deg); } 100% { transform: translateY(0) rotate(-3deg); } }
+    @keyframes pop { from { transform: scale(.85); opacity: 0; } }
+    @keyframes fi { from { opacity: 0; } }
+    @keyframes hb { 50% { transform: scale(1.15); } }
+    @keyframes pu { 50% { transform: translateX(-50%) scale(1.1); } }
+    @keyframes fb { to { transform: translateY(-8px); } }
+    @keyframes shk { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-6deg) scale(1.04); } 40% { transform: rotate(6deg) scale(1.08); } 60% { transform: rotate(-5deg) scale(1.1); } 80% { transform: rotate(4deg) scale(1.06); } }
+    @keyframes ry { 0% { scale: 0; rotate: 0deg; opacity: 1; } 100% { scale: 1; rotate: 60deg; opacity: 0; } }
+    @keyframes fl { 30% { opacity: .7; } to { opacity: 0; } }
+    @keyframes spk { from { transform: translate(0,0) scale(.4); opacity: 1; } to { transform: translate(var(--dx),var(--dy)) scale(1.2) rotate(180deg); opacity: 0; } }
+  </style>
+</head>
+<body>
+
+  <canvas id="cv"></canvas>
+  <div id="hud"></div>
+  <div id="bn"></div>
+  <div id="ui"></div>
+  <div id="sy" class="say"></div>
+  <div class="cr">Quà Sinh Nhật Con Trai - Lê Hải Phương (3/11/2026)</div>
+  <div id="iris"></div>
+
+  <script>
+    const V = {
+      "t": "Quà sinh nhật con trai",
+      "c": ["#e0f2fe", "#bae6fd", "#0284c7"],
+      "l": "Chúc con sinh nhật thật vui!\nMở từng món quà để nhận những lời yêu thương từ ba mẹ nhé! ❤️",
+      "s": [
+        {
+          "n": "Niềm tự hào & Sức khỏe",
+          "q": "Chạm vào từng hình để nhận lời chúc từ ba mẹ nhé!",
+          "a": [
+            ["🎂", "Chúc con sinh nhật thật vui! ba mẹ luôn tự hào về con. Con là niềm hạnh phúc lớn nhất của ba mẹ. Chúc con luôn mạnh khỏe, bình an, và gặp nhiều may mắn!"],
+            ["🏋️‍♂️", "ba mẹ mong con luôn quan tâm đến sức khỏe của mình. Ăn uống đầy đủ, ngủ nghỉ điều độ, tập thể dục khi có thể. Sức khỏe là vốn quý nhất!"],
+            ["🥛", "Dù bận rộn đến đâu, con cũng đừng quên ăn sáng và ăn đủ bữa trong ngày. Một bữa sáng đơn giản cũng đủ để nạp năng lượng giúp con làm việc hiệu quả."]
+          ]
+        },
+        {
+          "n": "Chăm sóc bản thân",
+          "q": "Chạm vào từng biểu tượng để xem lời dặn dò của ba mẹ nhé!",
+          "a": [
+            ["🌙", "ba mẹ mong con sắp xếp giờ ngủ hợp lý, đừng thức khuya quá nhiều. Nghỉ ngơi đủ giấc sẽ giúp con luôn có tinh thần tốt và khỏe mạnh."],
+            ["🥖", "Nếu sáng vội quá, con có thể mang theo sữa, trái cây, bánh mì hoặc món ăn nhẹ. ba mẹ chỉ mong con đừng bỏ bữa quá lâu."],
+            ["⛰️", "Con hãy luôn tin vào bản thân. Mọi cố gắng của con hôm nay sẽ là thành quả của ngày mai. ba mẹ luôn ở bên và dõi theo con."]
+          ]
+        },
+        {
+          "n": "Yêu thương & Trưởng thành",
+          "q": "Chạm vào từng bông hoa/lá thư để mở lời nhắn nhé!",
+          "a": [
+            ["💌", "Con không chỉ là con út cưng, mà còn là niềm tự hào, là tình yêu lớn lao của ba mẹ. Dù con đi học xa nhà, ba mẹ vẫn luôn dõi theo con!"],
+            ["👑", "Chúc con tuổi mới thật nhiều niềm vui, sức khỏe, thành công và hạnh phúc. Hãy luôn là chính mình và kiên định với mục tiêu con nhé!"],
+            ["💙", "ba mẹ luôn yêu thương, tin tưởng và ủng hộ con trên mọi con đường!"]
+          ]
+        }
+      ],
+      "e": "Chúc con trai tuổi mới luôn mạnh khỏe, hạnh phúc, gặt hái nhiều thành công và mãi là niềm tự hào của ba mẹ! ❤️",
+      "g": "Món quà lớn nhất của ba mẹ chính là sự trưởng thành và bình an của con.",
+      "m": {
+        "w": "Khỉ con chào con trai nhé! Sẽ dẫn con đi mở các trạm quà sinh nhật 🐵",
+        "a": ["Con chạm vào hộp quà thứ nhất 🎂", "Con mở hộp quà thứ hai 🌙", "Con đến trạm quà thứ ba 💌"],
+        "d": ["Con xem tiếp chặng sau nhé!", "Chỉ còn một trạm nữa thôi!", "Con đã mở hết các trạm quà rồi! Còn món quà đặc biệt cuối nữa 🎁"],
+        "f": "Món quà tuyệt vời nhất dành cho con đây 👑",
+        "h": "Khỉ con xin gửi tới con thật nhiều tình yêu thương 💙",
+        "b": "Chúc mừng sinh nhật con trai! Ngày 3/11 thật tuyệt vời 🎈"
+      }
+    };
+
+    const $ = q => document.querySelector(q);
+    const cv = $("#cv"), g = cv.getContext("2d"), ui = $("#ui");
+    const S = ["🎂", "🌙", "💌"], E = ["✨", "🎈", "⭐", "💙", "👑"], ZS = [16, 32, 48, 66];
+
+    let W, H, hy, F, Fx, cam = 0, tg = 0, ti = 0, wk = 0, t = 0, bb = 0, dn = [0, 0, 0, 0], hid = -1, onArr = null, last = performance.now(), catOn = 0, catF = 0, flip = 0, hop = 0, BY = 0, HS = [], CH = { x: 0, y: 0 }, GE = {}, sayT, SH = 0, SHT = 0;
+
+    document.title = V.t;
+
+    let sd = 11;
+    const R = () => (sd = sd * 16807 % 2147483647) / 2147483647;
+    const O = [], AP = [], PL = [V.c[2], "#fff", "#ffd95e", "#ff9cc0", "#b9a2ff", "#fff"], GR = ["#38bdf8", "#0284c7", "#0369a1"];
+    const px = z => Math.sin(z * .21) * .7 + Math.sin(z * .083) * .5;
+    const sg = () => R() < .5 ? -1 : 1;
+
+    for (let z = 1.5; z < 82; z += .7) {
+      const a = sg();
+      O.push({ k: 0, x: a * (2.4 + R() * 4.5), z: z + R(), c: R(), w: R() });
+      if (R() < .6) O.push({ k: 1, x: -a * (1.7 + R() * 4), z: z + R(), c: R(), w: R() });
+      for (let j = 0; j < 2; j++) O.push({ k: 2, x: sg() * (1.05 + R() * 2.2), z: z + R(), c: R(), w: R() });
+      for (let j = 0; j < 3; j++) O.push({ k: 3, x: sg() * (.9 + R() * 3.5), z: z + R(), c: R(), w: R() });
+    }
+    O.sort((a, b) => b.z - a.z);
+    for (let k = 0; k < 16; k++) AP.push({ x: R(), y: R(), v: 18 + R() * 28, p: R() * 6 });
+
+    function rs() {
+      const d = window.devicePixelRatio || 1;
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = W * d; cv.height = H * d;
+      g.setTransform(d, 0, 0, d, 0, 0);
+      hy = H * .42; F = H * 1.27; Fx = F * Math.min(1, W / H * 1.5);
+    }
+    window.addEventListener("resize", rs); rs();
+
+    const cx0 = () => px(cam + 1.2);
+    const P = i => {
+      const d = ZS[i] - cam, u = Fx / d;
+      return { x: W / 2 + SH + (px(ZS[i]) - cx0()) * u, y: hy + .55 * F / d, w: Math.min(u * (i == 3 ? .85 : .66), W * (i == 3 ? .5 : .42)) };
+    };
+
+    const ci = (x, y, r, c) => { g.fillStyle = c; g.beginPath(); g.arc(x, y, Math.max(r, .3), 0, 7); g.fill(); };
+    const el = (x, y, a, b, r = 0) => { g.beginPath(); g.ellipse(x, y, Math.max(a, .2), Math.max(b, .2), r, 0, 7); g.fill(); };
+
+    const BP = {
+      bd: "M6 40H94V84Q94 88 90 88H10Q6 88 6 84Z",
+      sh: "M6 70H94V84Q94 88 90 88H10Q6 88 6 84Z",
+      ld: "M2 24Q2 20 6 20H94Q98 20 98 24V40H2Z",
+      rb: "M43 40H57V88H43Z",
+      rl: "M43 20H57V40H43Z",
+      l1: "M50 18C42-6 14-6 16 8C18 22 42 24 50 18Z",
+      l2: "M50 18C58-6 86-6 84 8C82 22 58 24 50 18Z",
+      i1: "M50 18C44 2 24 0 24 9C24 17 42 21 50 18Z",
+      i2: "M50 18C56 2 76 0 76 9C76 17 58 21 50 18Z",
+      t1: "M48 19L36 38L45 34L51 22Z",
+      t2: "M52 19L64 38L55 34L49 22Z",
+      kn: "M44 17a6 6.5 0 1 0 12 0a6 6.5 0 1 0-12 0Z"
+    };
+    const P2 = {}; for (const k in BP) P2[k] = new Path2D(BP[k]);
+    const pa = (k, f, s) => `<path d="${BP[k]}" fill="${f}"${s ? ' stroke="rgba(0,0,0,.2)" stroke-width="1"' : ""}/>`;
+    const BOX = () => `<svg class="gbs" viewBox="0 0 100 90">${pa("bd", V.c[2])}${pa("sh", "rgba(0,0,0,.09)")}${pa("rb", "rgba(255,255,255,.92)")}<g class="ld">${pa("ld", V.c[2])}${pa("ld", "rgba(255,255,255,.22)")}${pa("rl", "rgba(255,255,255,.92)")}<g class="bw"><g class="tl1">${pa("t1", "#fff", 1)}</g><g class="tl2">${pa("t2", "#fff", 1)}</g><g class="lp1">${pa("l1", "#fff", 1)}${pa("i1", "rgba(0,0,0,.07)")}</g><g class="lp2">${pa("l2", "#fff", 1)}${pa("i2", "rgba(0,0,0,.07)")}</g>${pa("kn", "#fff", 1)}</g></g></svg>`;
+
+    function drawBox(x, y, w) {
+      g.save(); g.translate(x - w / 2, y - w * .9); g.scale(w / 100, w * .9 / 90);
+      const f = (p, c, s) => { g.fillStyle = c; g.fill(P2[p]); if (s) { g.strokeStyle = "rgba(0,0,0,.2)"; g.lineWidth = 1; g.stroke(P2[p]); } };
+      f("bd", V.c[2]); f("sh", "rgba(0,0,0,.09)"); f("rb", "rgba(255,255,255,.92)"); f("ld", V.c[2]); f("ld", "rgba(255,255,255,.22)"); f("rl", "rgba(255,255,255,.92)");
+      g.save(); g.translate(50, 18); g.rotate(Math.sin(t * 2.6) * .06); g.translate(-50, -18);
+      [["t1", 1], ["t2", -1]].forEach(([p, s]) => { g.save(); g.translate(50, 20); g.rotate(Math.sin(t * 3.4) * .14 * s); g.translate(-50, -20); f(p, "#fff", 1); g.restore(); });
+      ["l1", "l2"].forEach((p, j) => { g.save(); g.translate(50, 18); g.scale(1 + Math.sin(t * 4.5 + j * 3) * .05, 1); g.translate(-50, -18); f(p, "#fff", 1); g.restore(); });
+      f("i1", "rgba(0,0,0,.07)"); f("i2", "rgba(0,0,0,.07)"); f("kn", "#fff", 1); g.restore(); g.restore();
+    }
+
+    function catPos() {
+      if (BY) { const d = 2.4; return { X: W / 2, Y: hy + .55 * F / d, k: Fx / d * .52 }; }
+      const cap = ZS[ti] - .6, ahead = cam + 2.1, d = Math.min(ahead, cap) - cam, q = Math.min(1, Math.max(0, (ahead - cap + .9) / .9)), p = P(ti);
+      let k = Fx / d * .4; k = Math.min(k, Math.max(60, (W - (p.x + p.w / 2) - 22) / .9));
+      const hw = .45 * k, xa = Math.min(W - hw - 8, p.x + p.w / 2 + 14 + hw);
+      return { X: W * .56 * (1 - q) + xa * q, Y: hy + .55 * F / d, k };
+    }
+
+    let HP = 0;
+    // Vẽ hình Chú Khỉ Con ngộ nghĩnh thay thế cho Mèo
+    function drawMonkey(X, Y, k, front, pose) {
+      const sc = k * 1.5 / 190, hp = front && pose == "heart";
+      g.save(); g.translate(X, Y - (hop > 0 ? Math.abs(Math.sin(hop * 9)) * .22 * k * hop : 0) - (wk ? Math.abs(Math.sin(t * 9)) * .03 * k : 0));
+      g.scale(sc, sc); g.translate(-56, -188); g.lineJoin = "round"; g.lineCap = "round";
+      
+      const FUR = "#b45309", FACE = "#fde68a", CLOTH = "#38bdf8", OL = "rgba(120,53,15,.6)";
+
+      // Đuôi khỉ uốn lượn phía sau
+      g.lineWidth = 9; g.strokeStyle = "#92400e"; g.beginPath();
+      let twv = Math.sin(t * 4) * 6;
+      g.moveTo(88, 160); g.bezierCurveTo(125 + twv, 160, 130 + twv, 110, 115 + twv, 95); g.stroke();
+
+      // Thân khỉ mặc áo xanh
+      g.fillStyle = CLOTH; g.strokeStyle = "#0369a1"; g.lineWidth = 1;
+      g.beginPath(); g.roundRect(32, 110, 48, 65, 12); g.fill(); g.stroke();
+
+      // Đầu khỉ (Hình tròn to màu nâu cam)
+      g.fillStyle = FUR; g.strokeStyle = OL; g.lineWidth = 1.2;
+      g.beginPath(); g.arc(56, 75, 34, 0, Math.PI * 2); g.fill(); g.stroke();
+
+      // Tai khỉ 2 bên
+      g.beginPath(); g.arc(23, 72, 11, 0, Math.PI * 2); g.arc(89, 72, 11, 0, Math.PI * 2); g.fill(); g.stroke();
+      g.fillStyle = FACE;
+      g.beginPath(); g.arc(23, 72, 6, 0, Math.PI * 2); g.arc(89, 72, 6, 0, Math.PI * 2); g.fill();
+
+      // Mặt khỉ (Vùng da sáng màu vàng kem hình trái tim ngược)
+      g.fillStyle = FACE;
+      g.beginPath(); g.ellipse(56, 80, 26, 21, 0, 0, Math.PI * 2); g.fill();
+
+      // Mắt khỉ ngộ nghĩnh
+      g.fillStyle = "#1e293b";
+      g.beginPath(); g.arc(46, 73, 4.5, 0, Math.PI * 2); g.arc(66, 73, 4.5, 0, Math.PI * 2); g.fill();
+      g.fillStyle = "#fff";
+      g.beginPath(); g.arc(47.5, 71.5, 1.5, 0, Math.PI * 2); g.arc(67.5, 71.5, 1.5, 0, Math.PI * 2); g.fill();
+
+      // Mũi và miệng cười toe toét
+      g.fillStyle = "#92400e";
+      g.beginPath(); g.ellipse(56, 84, 3, 2, 0, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = "#92400e"; g.lineWidth = 2; g.beginPath();
+      g.arc(56, 84, 9, 0.1 * Math.PI, 0.9 * Math.PI); g.stroke();
+
+      // Chỏm lông trên đầu khỉ
+      g.fillStyle = FUR; g.beginPath();
+      g.moveTo(50, 41); g.quadraticCurveTo(56, 30, 62, 41); g.quadraticCurveTo(56, 36, 50, 41); g.fill();
+
+      if (hp) {
+        // Trái tim tình yêu trên đầu khi ở màn hình cuối
+        const s = 12 * (1 + .1 * Math.sin(t * 6)), cx = 56, cy = 20;
+        g.fillStyle = "#38bdf8"; g.strokeStyle = "#fff"; g.lineWidth = 1.6;
+        g.beginPath(); g.moveTo(cx, cy + s * .9);
+        g.bezierCurveTo(cx - s * 1.6, cy - s * .1, cx - s * .6, cy - s * 1.3, cx, cy - s * .4);
+        g.bezierCurveTo(cx + s * .6, cy - s * 1.3, cx + s * 1.6, cy - s * .1, cx, cy + s * .9);
+        g.fill(); g.stroke();
+      }
+
+      g.restore(); CH.x = X; CH.y = Y - (hp ? 1.95 : 1.6) * k;
+    }
+
+    function draw() {
+      const c = V.c, cxm = cx0(); g.save(); g.translate(0, bb);
+      let q = g.createLinearGradient(0, 0, 0, hy); q.addColorStop(0, c[1]); q.addColorStop(1, c[0]); g.fillStyle = q; g.fillRect(0, -40, W, hy + 42);
+
+      [[.6, "#bae6fd", .5, .9], [.35, "#7dd3fc", .9, .6]].forEach(([h, col, f, ph]) => {
+        g.fillStyle = col; g.beginPath(); g.moveTo(0, hy + 2);
+        for (let X = 0; X <= W; X += 20) g.lineTo(X, hy - (Math.sin(X / W * 6 * f + ph) + 1.3) * H * .035 * h);
+        g.lineTo(W, hy + 2); g.fill();
+      });
+
+      q = g.createLinearGradient(0, hy, 0, H); q.addColorStop(0, "#e0f2fe"); q.addColorStop(1, "#38bdf8"); g.fillStyle = q; g.fillRect(0, hy, W, H + 40);
+
+      const L = [], Rr = [];
+      for (let z = cam + .45; z < cam + 84; z += z < cam + 8 ? .5 : 2) {
+        const d = z - cam, u = Fx / d, Y = hy + .55 * F / d, m = W / 2 + SH + (px(z) - cxm) * u;
+        L.push([m - .82 * u, Y]); Rr.push([m + .82 * u, Y]);
+      }
+      g.fillStyle = "#ffffff"; g.beginPath(); L.forEach(([a, b], i) => i ? g.lineTo(a, b) : g.moveTo(a, b));
+      for (let i = Rr.length - 1; i >= 0; i--) g.lineTo(Rr[i][0], Rr[i][1]);
+      g.fill();
+
+      for (const o of O) {
+        const d = o.z - cam; if (d < .7 || d > 72) continue;
+        const u = Fx / d, X = W / 2 + SH + (px(o.z) + o.x - cxm) * u, Y = hy + .55 * F / d;
+        if (X < -1.6 * u || X > W + 1.6 * u) continue;
+        if (o.k == 0) {
+          const cr = GR, s = u * (.8 + o.w * .5);
+          g.fillStyle = "#0369a1"; g.beginPath(); g.moveTo(X - .09 * s, Y); g.lineTo(X - .05 * s, Y - 1.2 * s); g.lineTo(X + .05 * s, Y - 1.2 * s); g.lineTo(X + .09 * s, Y); g.fill();
+          [[0, -1.55, .56], [-.42, -1.3, .42], [.42, -1.3, .42]].forEach(([a, b, r], i) => ci(X + a * s, Y + b * s, r * s, cr[i % 3]));
+        }
+      }
+
+      for (let i = 0; i < 4; i++) {
+        const d = ZS[i] - cam; if (i == hid || dn[i] || d < .8 || d > 62) continue;
+        const p = P(i), h = p.w * .9;
+        drawBox(p.x, p.y, p.w);
+        g.font = p.w * .34 + "px serif"; g.fillStyle = "#000"; g.textAlign = "center";
+        g.fillText(i < 3 ? S[i] : "👑", p.x, p.y - h - p.w * .14 + Math.sin(t * 3) * 3);
+      }
+
+      if (catOn) {
+        const cp = catPos();
+        drawMonkey(cp.X, cp.Y, cp.k, 1, BY ? (HP ? "wave" : "heart") : "wave");
+      }
+
+      HS.forEach(h => { g.globalAlpha = Math.max(0, h.l); g.font = h.s + "px serif"; g.fillStyle = "#000"; g.fillText("💙", h.x, h.y); });
+      g.globalAlpha = 1; g.restore();
+    }
+
+    function tick(n) {
+      const dt = Math.min(.05, (n - last) / 1000); last = n; t += dt;
+      if (wk) {
+        const dd = tg - cam; cam += Math.min(4.6, Math.max(.6, dd * 1.4)) * dt;
+        if (tg - cam < .02) { cam = tg; wk = 0; const f = onArr; onArr = null; if (f) f(); }
+      }
+      SH += (((!BY && catOn && (!wk || tg - cam < 4.5)) ? SHT : 0) - SH) * Math.min(1, dt * 3.5);
+      
+      AP.forEach(a => { a.y += a.v * dt / H; if (a.y > 1.05) { a.y = -.05; a.x = Math.random(); } });
+      HS = HS.filter(h => (h.x += h.vx * dt, h.y += h.vy * dt, h.l -= dt * .45) > 0);
+      
+      draw();
+      if (catOn) {
+        const b = $("#sy"); b.style.left = Math.min(W - 100, Math.max(100, CH.x)) + "px"; b.style.top = Math.max(90, CH.y) + "px";
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    const walkTo = (i, f) => { ti = i; tg = ZS[i] - 2.3; wk = 1; onArr = f; SHT = W * .36 - (W / 2 + (px(ZS[i]) - px(ZS[i] - 1.1)) * Fx / 2.3); };
+    const sayIt = s => { const b = $("#sy"); b.textContent = s; b.classList.add("on"); clearTimeout(sayT); sayT = setTimeout(() => b.classList.remove("on"), 4500); };
+    const love = n => { for (let k = 0; k < n; k++) HS.push({ x: CH.x + (Math.random() - .5) * 60, y: CH.y, vx: (Math.random() - .5) * 24, vy: -(50 + Math.random() * 50), l: 1, s: 18 + Math.random() * 16 }); };
+
+    // Icon Khỉ con ngộ nghĩnh cho khung lời chúc cuối
+    const monkeySVG = () => `<svg class="monkey" viewBox="0 0 100 100"><circle cx="50" cy="55" r="32" fill="#b45309" stroke="#78350f" stroke-width="1.5"/><circle cx="21" cy="52" r="10" fill="#b45309"/><circle cx="21" cy="52" r="5" fill="#fde68a"/><circle cx="79" cy="52" r="10" fill="#b45309"/><circle cx="79" cy="52" r="5" fill="#fde68a"/><ellipse cx="50" cy="60" rx="24" ry="19" fill="#fde68a"/><circle cx="41" cy="54" r="4" fill="#1e293b"/><circle cx="59" cy="54" r="4" fill="#1e293b"/><ellipse cx="50" cy="63" rx="2.5" ry="1.5" fill="#92400e"/><path d="M43 69Q50 75 57 69" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round"/><path d="M44 26Q50 16 56 26" fill="#b45309"/></svg>`;
+
+    function spark(x, y, n) {
+      for (let k = 0; k < n; k++) {
+        const s = document.createElement("span"), a = Math.random() * 6.28, r = 80 + Math.random() * 170;
+        s.className = "sp"; s.textContent = E[k % 5];
+        s.style.cssText = `left:${x}px;top:${y}px;--dx:${Math.cos(a)*r}px;--dy:${Math.sin(a)*r-60}px`;
+        ui.append(s); setTimeout(() => s.remove(), 1300);
+      }
+    }
+
+    function card(h, cb, lb) {
+      const c = document.createElement("div"); c.className = "cd";
+      c.innerHTML = `<div class="paper">${h}<button class="btn">${lb || "Tiếp theo 💙"}</button></div>`;
+      ui.append(c);
+      c.querySelector("button").onclick = () => { c.classList.add("out"); setTimeout(() => { c.remove(); if (cb) cb(); }, 300); };
+    }
+
+    function banner(s) { const b = $("#bn"); b.textContent = s; b.className = "show"; setTimeout(() => b.className = "", 3300); }
+
+    function arrive(i) {
+      hid = i; SH = BY ? 0 : SHT; const p = P(i), w = p.w, h = w * .9;
+      GE = { x: p.x, y: p.y, w, h }; sayIt(i < 3 ? V.m.a[i] : V.m.f); banner(i < 3 ? `Trạm ${i + 1} · ${V.s[i].n}` : "Món quà cuối hành trình");
+      const st = document.createElement("div"); st.className = "stg2"; st.id = "st";
+      st.innerHTML = `<div class="gb" id="gb" style="left:${p.x - w / 2}px;top:${p.y - h}px;width:${w}px;height:${h}px">${BOX()}<i style="position:absolute;left:0;right:0;top:-48%;text-align:center;font-style:normal;font-size:${w*.34}px">${i < 3 ? S[i] : "👑"}</i></div><button class="tap" style="left:${p.x}px;top:${p.y - h * .45}px;width:${w * 1.2}px;height:${h * 1.3}px"><span>Chạm để mở ✨</span></button>`;
+      ui.append(st);
+      st.querySelector(".tap").onclick = e => { e.currentTarget.remove(); openBox(i); };
+    }
+
+    function openBox(i) {
+      const st = $("#st"), gb = $("#gb"); dn[i] = 1; hop = 1; gb.classList.add("shake");
+      st.insertAdjacentHTML("beforeend", `<div class="rays" style="left:${GE.x}px;top:${GE.y - GE.h * .6}px"></div><div class="flash"></div>`);
+      setTimeout(() => { gb.classList.replace("shake", "open"); st.classList.add("burst"); spark(GE.x, GE.y - GE.h, i == 3 ? 48 : 32); love(6); }, 650);
+      setTimeout(() => { gb.classList.add("vanish"); content(i, st, GE.x, GE.y - GE.h * .8); }, 1300);
+    }
+
+    function content(i, st, cx, cy) {
+      const s = V.s[i];
+      if (i == 3) return card(`${monkeySVG()}<p>${V.e}</p><p class="gift">🎁 ${V.g}</p>`, bye, "Tiếp tục 💙");
+      let n = 0; const r = Math.min(W * .4, 150);
+      s.a.forEach(([e, tx], k) => {
+        const b = document.createElement("button"); b.className = "itm"; b.textContent = e;
+        b.style.left = cx + "px"; b.style.top = cy + "px"; st.append(b);
+        const a = (k - 1) * .95;
+        setTimeout(() => {
+          b.style.left = Math.min(W - 48, Math.max(48, W / 2 + Math.sin(a) * r * 1.1)) + "px";
+          b.style.top = cy - Math.cos(a) * r * .9 - 30 + "px"; b.classList.add("fly");
+        }, k * 150);
+        b.onclick = () => {
+          if (b.got) return; b.got = 1; b.classList.add("got");
+          card(`<div class="e1">${e}</div><p>${tx}</p>`, () => { if (++n == 3) done(i); });
+        };
+      });
+    }
+
+    function done(i) {
+      const elHud = $("#s" + i); if (elHud) elHud.classList.add("on");
+      love(8); sayIt(V.m.d[i]);
+      const b = document.createElement("button"); b.className = "btn go"; b.textContent = i < 2 ? "Đi tiếp ➜" : "Đến món quà cuối ➜";
+      b.onclick = () => { b.remove(); $("#st").remove(); hid = -1; walkTo(i + 1, () => arrive(i + 1)); };
+      ui.append(b);
+    }
+
+    function bye() {
+      if ($("#st")) $("#st").remove();
+      hid = -1; BY = 1; HP = 0; sayIt(V.m.h); love(6);
+      setInterval(() => { HP ^= 1; sayIt(HP ? V.m.b : V.m.h); love(HP ? 3 : 7); }, 3800);
+      const b = document.createElement("button"); b.className = "btn go"; b.textContent = "Quay lại từ đầu ↺";
+      b.onclick = () => location.reload(); ui.append(b);
+    }
+
+    $("#hud").innerHTML = S.map((s, i) => `<b id="s${i}">${s}</b>`).join("");
+    ui.innerHTML = `<div class="stg"><div class="ev" id="ev"><div class="fp"></div>💌</div><div class="paper sh" id="sh">${monkeySVG()}<p>${V.l.replace(/\n/g, "<br>")}</p><button class="heart" id="hb">💙<small>ẤN ĐỂ MỞ</small></button></div></div><button class="skip" id="sk">Bắt đầu 🚀 ›</button>`;
+
+    const ev = $("#ev"), sh = $("#sh"); let L = 0;
+    const op = () => { if (L++) return; ev.classList.add("o"); setTimeout(() => { ev.classList.add("gone"); sh.classList.add("up"); }, 550); };
+    ev.addEventListener("animationend", op);
+    $("#sk").onclick = () => { ev.style.animation = "none"; op(); $("#sk").remove(); };
+    $("#hb").onclick = () => {
+      if ($("#sk")) $("#sk").remove();
+      $("#iris").classList.add("on");
+      setTimeout(() => {
+        ui.innerHTML = ""; $("#hud").classList.add("on"); $("#iris").classList.remove("on");
+        catOn = 1; sayIt(V.m.w); walkTo(0, () => arrive(0));
+      }, 1000);
+    };
+  </script>
+</body>
+</html>
