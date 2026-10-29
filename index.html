@@ -129,6 +129,11 @@
   <div class="cr">Quà Sinh Nhật Con Trai - Lê Hải Phương (3/11/2026)</div>
   <div id="iris"></div>
   <button class="music-btn" id="mBtn">🎵</button>
+
+  <!-- Thẻ âm thanh nhạc nền Happy Birthday được đặt ngay trong body -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="https://assets.mixkit.co/music/preview/mixkit-happy-birthday-to-you-428.mp3" type="audio/mp3">
+  </audio>
   
   <script>
     const V = {
@@ -255,7 +260,6 @@
     }
 
     let HP = 0;
-    // Vẽ hình Chú Khỉ Con ngộ nghĩnh thay thế cho Mèo
     function drawMonkey(X, Y, k, front, pose) {
       const sc = k * 1.5 / 190, hp = front && pose == "heart";
       g.save(); g.translate(X, Y - (hop > 0 ? Math.abs(Math.sin(hop * 9)) * .22 * k * hop : 0) - (wk ? Math.abs(Math.sin(t * 9)) * .03 * k : 0));
@@ -263,46 +267,37 @@
       
       const FUR = "#b45309", FACE = "#fde68a", CLOTH = "#38bdf8", OL = "rgba(120,53,15,.6)";
 
-      // Đuôi khỉ uốn lượn phía sau
       g.lineWidth = 9; g.strokeStyle = "#92400e"; g.beginPath();
       let twv = Math.sin(t * 4) * 6;
       g.moveTo(88, 160); g.bezierCurveTo(125 + twv, 160, 130 + twv, 110, 115 + twv, 95); g.stroke();
 
-      // Thân khỉ mặc áo xanh
       g.fillStyle = CLOTH; g.strokeStyle = "#0369a1"; g.lineWidth = 1;
       g.beginPath(); g.roundRect(32, 110, 48, 65, 12); g.fill(); g.stroke();
 
-      // Đầu khỉ (Hình tròn to màu nâu cam)
       g.fillStyle = FUR; g.strokeStyle = OL; g.lineWidth = 1.2;
       g.beginPath(); g.arc(56, 75, 34, 0, Math.PI * 2); g.fill(); g.stroke();
 
-      // Tai khỉ 2 bên
       g.beginPath(); g.arc(23, 72, 11, 0, Math.PI * 2); g.arc(89, 72, 11, 0, Math.PI * 2); g.fill(); g.stroke();
       g.fillStyle = FACE;
       g.beginPath(); g.arc(23, 72, 6, 0, Math.PI * 2); g.arc(89, 72, 6, 0, Math.PI * 2); g.fill();
 
-      // Mặt khỉ (Vùng da sáng màu vàng kem hình trái tim ngược)
       g.fillStyle = FACE;
       g.beginPath(); g.ellipse(56, 80, 26, 21, 0, 0, Math.PI * 2); g.fill();
 
-      // Mắt khỉ ngộ nghĩnh
       g.fillStyle = "#1e293b";
       g.beginPath(); g.arc(46, 73, 4.5, 0, Math.PI * 2); g.arc(66, 73, 4.5, 0, Math.PI * 2); g.fill();
       g.fillStyle = "#fff";
       g.beginPath(); g.arc(47.5, 71.5, 1.5, 0, Math.PI * 2); g.arc(67.5, 71.5, 1.5, 0, Math.PI * 2); g.fill();
 
-      // Mũi và miệng cười toe toét
       g.fillStyle = "#92400e";
       g.beginPath(); g.ellipse(56, 84, 3, 2, 0, 0, Math.PI * 2); g.fill();
       g.strokeStyle = "#92400e"; g.lineWidth = 2; g.beginPath();
       g.arc(56, 84, 9, 0.1 * Math.PI, 0.9 * Math.PI); g.stroke();
 
-      // Chỏm lông trên đầu khỉ
       g.fillStyle = FUR; g.beginPath();
       g.moveTo(50, 41); g.quadraticCurveTo(56, 30, 62, 41); g.quadraticCurveTo(56, 36, 50, 41); g.fill();
 
       if (hp) {
-        // Trái tim tình yêu trên đầu khi ở màn hình cuối
         const s = 12 * (1 + .1 * Math.sin(t * 6)), cx = 56, cy = 20;
         g.fillStyle = "#38bdf8"; g.strokeStyle = "#fff"; g.lineWidth = 1.6;
         g.beginPath(); g.moveTo(cx, cy + s * .9);
@@ -386,7 +381,6 @@
     const sayIt = s => { const b = $("#sy"); b.textContent = s; b.classList.add("on"); clearTimeout(sayT); sayT = setTimeout(() => b.classList.remove("on"), 4500); };
     const love = n => { for (let k = 0; k < n; k++) HS.push({ x: CH.x + (Math.random() - .5) * 60, y: CH.y, vx: (Math.random() - .5) * 24, vy: -(50 + Math.random() * 50), l: 1, s: 18 + Math.random() * 16 }); };
 
-    // Icon Khỉ con ngộ nghĩnh cho khung lời chúc cuối
     const monkeySVG = () => `<svg class="monkey" viewBox="0 0 100 100"><circle cx="50" cy="55" r="32" fill="#b45309" stroke="#78350f" stroke-width="1.5"/><circle cx="21" cy="52" r="10" fill="#b45309"/><circle cx="21" cy="52" r="5" fill="#fde68a"/><circle cx="79" cy="52" r="10" fill="#b45309"/><circle cx="79" cy="52" r="5" fill="#fde68a"/><ellipse cx="50" cy="60" rx="24" ry="19" fill="#fde68a"/><circle cx="41" cy="54" r="4" fill="#1e293b"/><circle cx="59" cy="54" r="4" fill="#1e293b"/><ellipse cx="50" cy="63" rx="2.5" ry="1.5" fill="#92400e"/><path d="M43 69Q50 75 57 69" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round"/><path d="M44 26Q50 16 56 26" fill="#b45309"/></svg>`;
 
     function spark(x, y, n) {
@@ -461,43 +455,50 @@
     $("#hud").innerHTML = S.map((s, i) => `<b id="s${i}">${s}</b>`).join("");
     ui.innerHTML = `<div class="stg"><div class="ev" id="ev"><div class="fp"></div>💌</div><div class="paper sh" id="sh">${monkeySVG()}<p>${V.l.replace(/\n/g, "<br>")}</p><button class="heart" id="hb">💙<small>ẤN ĐỂ MỞ</small></button></div></div><button class="skip" id="sk">Bắt đầu 🚀 ›</button>`;
 
-    const ev = $("#ev"), sh = $("#sh"); let L = 0;
-    const op = () => { if (L++) return; ev.classList.add("o"); setTimeout(() => { ev.classList.add("gone"); sh.classList.add("up"); }, 550); };
-    ev.addEventListener("animationend", op);
-    $("#sk").onclick = () => { ev.style.animation = "none"; op(); $("#sk").remove(); };
-    $("#hb").onclick = () => {
-      // Thêm dòng lệnh phát nhạc vào đây
-      const music = document.getElementById("bgMusic");
-      if (music) { music.volume = 0.4; music.play().catch(e => console.log(e)); }
+    const ev = $("#ev"), sh = $("#sh"); let L = 0, isMOn = false;
+    const bgM = $("#bgMusic");
+    const mBtn = $("#mBtn");
 
-      if ($("#sk")) $("#sk").remove();
-      $("#iris").classList.add("on");
-      setTimeout(() => {
-        ui.innerHTML = ""; $("#hud").classList.add("on"); $("#iris").classList.remove("on");
-        catOn = 1; sayIt(V.m.w); walkTo(0, () => arrive(0));
-      }, 1000);
+    const playM = () => {
+      if (bgM) {
+        bgM.volume = 0.5;
+        bgM.play().then(() => { 
+          isMOn = true; 
+          if(mBtn) mBtn.textContent = "🔊"; 
+        }).catch(e => console.log("Audio play blocked:", e));
+      }
     };
 
-    const mBtn = document.getElementById("mBtn");
-    const bgMusic = document.getElementById("bgMusic");
-    let isPlaying = false;
-    if (mBtn && bgMusic) {
+    if (mBtn) {
       mBtn.onclick = () => {
-        isPlaying = !isPlaying;
-        if (isPlaying) {
-          bgMusic.play();
-          mBtn.textContent = "🔊";
+        if (!bgM) return;
+        if (isMOn) {
+          bgM.pause(); isMOn = false; mBtn.textContent = "🔇";
         } else {
-          bgMusic.pause();
-          mBtn.textContent = "🔇";
+          playM();
         }
       };
     }
+
+    const op = () => { if (L++) return; ev.classList.add("o"); setTimeout(() => { ev.classList.add("gone"); sh.classList.add("up"); }, 550); };
+    ev.addEventListener("animationend", op);
     
+    $("#sk").onclick = () => { 
+      playM();
+      ev.style.animation = "none"; op(); $("#sk").remove(); 
+    };
+    
+    $("#hb").onclick = () => {
+      playM();
+      if ($("#sk")) $("#sk").remove();
+      $("#iris").classList.add("on");
+      setTimeout(() => {
+        ui.innerHTML = ""; 
+        $("#hud").classList.add("on"); 
+        $("#iris").classList.remove("on");
+        catOn = 1; sayIt(V.m.w); walkTo(0, () => arrive(0));
+      }, 1000);
+    };
   </script>
-  <!-- Thẻ âm thanh nhạc nền Happy Birthday -->
-  <audio id="bgMusic" loop>
-    <source src="https://assets.mixkit.co/music/preview/mixkit-happy-birthday-to-you-428.mp3" type="audio/mp3">
-  </audio>
 </body>
 </html>
